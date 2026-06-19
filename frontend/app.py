@@ -46,7 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-API_URL_QUERY = "https://ai-hallucination-mitigator.onrender.com"
+API_URL_QUERY = "https://ai-hallucination-mitigator.onrender.com/api/v1/query/submit"
 
 st.title("🛡️ RAG-Driven LLM Hallucination Interceptor")
 st.markdown("<p style='color: #666; font-size: 1.1rem;'>Evaluating LLM outputs in real-time using SelfCheckGPT stochastic sampling and ChromaDB retrieval.</p>", unsafe_allow_html=True)
@@ -77,11 +77,11 @@ if ask_btn and query:
                 success = True
             else:
                 status.update(label="API Error", state="error")
-                st.error("Backend Error. Check terminal logs.")
+                st.error(f"Backend Error: {response.text}")
                 
         except Exception as e:
             status.update(label="Connection Failed", state="error")
-            st.error("Make sure your FastAPI server is running on port 8000!")
+            st.error(f"Connection Error: {str(e)}")
 
 
     if success and data:
@@ -91,7 +91,7 @@ if ask_btn and query:
         m1, m2, m3 = st.columns(3)
         
         score = data['hallucination_score']
-        triggered = data['was_rag_triggered']
+        risk_level = data['risk_level']
         
         with m1:
             if score > 0.25:
@@ -100,36 +100,20 @@ if ask_btn and query:
                 st.metric("Hallucination Risk", f"{score * 100:.1f}%", "+ SAFE")
                 
         with m2:
-            status_text = "RAG INJECTED" if triggered else "BASELINE TRUSTED"
-            st.metric("Pipeline Action", status_text)
+            st.metric("Risk Level", risk_level)
             
         with m3:
             st.metric("Latency", "1.2s", "- Optimized") 
 
         st.write("<br>", unsafe_allow_html=True)
         
-        st.subheader("Response Comparison")
-        left_col, right_col = st.columns(2)
-        
-        with left_col:
-            with st.container(border=True):
-                st.markdown("### 🔴 Baseline LLM (Llama-3.1)")
-                st.caption("Raw, unverified generation")
-                st.divider()
-                st.markdown(f"> {data['baseline_response']}")
-                
-        with right_col:
-            with st.container(border=True):
-                if triggered:
-                    st.markdown("### 🟢 Mitigated System Output")
-                    st.caption("Grounded via ChromaDB Vector Search")
-                    st.divider()
-                    st.warning(f"**Knowledge Base Match:**\n\n{data['final_response']}")
-                else:
-                    st.markdown("### 🟢 Final System Output")
-                    st.caption("Baseline verified by SelfCheckGPT")
-                    st.divider()
-                    st.success(data['final_response'])
+        st.subheader("AI Response")
+
+        with st.container(border=True):
+
+            st.markdown("### 🤖 Generated Response")
+            st.divider()
+            st.write(data["response"])
                     
         js_scroll = '''
         <script>

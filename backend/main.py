@@ -52,10 +52,10 @@ def submit_query(request: QueryRequest):
     else:
         risk_level = "LOW"
 
-    return {
+        return {
         "status": "success",
-        "query": request.query,
-        "hallucination_score": h_score,
-        "risk_level": risk_level,
-        "response": baseline_answer
+        "hallucination_score": hallucination_score,
+        "was_rag_triggered": False,
+        "final_response": baseline_answer,
+        "baseline_response": baseline_answer
     }
