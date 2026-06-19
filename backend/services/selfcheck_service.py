@@ -1,10 +1,6 @@
 from difflib import SequenceMatcher
 
-
-def calculate_hallucination_score(
-    baseline_answer: str,
-    sampled_answers: list
-) -> float:
+def calculate_hallucination_score(baseline_answer, sampled_answers):
 
     if not sampled_answers:
         return 0.0
@@ -12,7 +8,6 @@ def calculate_hallucination_score(
     similarities = []
 
     for answer in sampled_answers:
-
         similarity = SequenceMatcher(
             None,
             baseline_answer.lower(),
@@ -23,6 +18,7 @@ def calculate_hallucination_score(
 
     avg_similarity = sum(similarities) / len(similarities)
 
-    hallucination_score = 1 - avg_similarity
+    # Scale down false positives
+    hallucination_score = (1 - avg_similarity) * 0.4
 
     return round(hallucination_score, 2)
