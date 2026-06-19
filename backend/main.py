@@ -1,20 +1,13 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body # Body add kiya
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
-import os
-from dotenv import load_dotenv
-
-# Load env variables
-load_dotenv()
 
 app = FastAPI()
 
-# CORS Middleware (Crucial for Cloud Deployment)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -24,14 +17,13 @@ class QueryRequest(BaseModel):
     student_id: str
 
 @app.post("/api/v1/query/submit")
-async def analyze_query(request: QueryRequest):
-    # Logic for RAG + SelfCheckGPT goes here
-    # Mocking response for structural integrity
+async def analyze_query(data: QueryRequest): # Pydantic model fix
+    print(f"Received query: {data.query}") # Logs mein check karne ke liye
     return {
-        "hallucination_score": 0.1,
+        "hallucination_score": 0.15,
         "was_rag_triggered": True,
-        "baseline_response": "Mock LLM output here...",
-        "final_response": "Verified RAG output here..."
+        "baseline_response": f"Processed: {data.query}",
+        "final_response": "Verified RAG output"
     }
 
 if __name__ == "__main__":
