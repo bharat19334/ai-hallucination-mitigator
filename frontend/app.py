@@ -46,7 +46,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 
-API_URL_QUERY = "http://127.0.0.1:8000/api/v1/query/submit"
+API_URL_QUERY = "https://ai-hallucination-mitigator.onrender.com"
 
 st.title("🛡️ RAG-Driven LLM Hallucination Interceptor")
 st.markdown("<p style='color: #666; font-size: 1.1rem;'>Evaluating LLM outputs in real-time using SelfCheckGPT stochastic sampling and ChromaDB retrieval.</p>", unsafe_allow_html=True)
